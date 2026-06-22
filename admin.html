@@ -10,14 +10,72 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="明星賽後台">
 
-    <!-- ⚾ 專屬高解析度 PNG 桌面圖示 (同時支援電腦分頁 icon 與手機「加入主畫面」apple-touch-icon) -->
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAAByCAMAAADbS6byAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURf4VZTunO6fbr9ut267brtux27Hbsdux27Hbsdux2/77/f7+/v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnK7b6f79/f///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJv2fGMAAAAAdFJOUwD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AtY9FfQAACcRJREFUeNrt21sTgjAMBVD6/5/u7NChREqEGBp9956EInunpL6fG0V19bUf9t1uNfV19v32/T7N/7B0/37ofj7v68O2vN7Xp6P7urrvfTqG3/u+j+U9Dtt8fFp6269z2N7vsH7u6zN8+PzN0u99ObyvD9vyel+fju7r6r736Rh+7/s+lvc4bPPxaelta+7jsB7j6Zvep2N63scwfD+GfTy+Pobh+Zvep6N7e99H9/Y+Dtv7bZZ+72Po9z6Gfu9j2N7fYf3cx2f48Pmbpd/7cnhfH7bl9b4+Hd3X1X3v0zH83vd9LO9x2Obj09LbPp7DeY/D9zyePofzeZ6G83l6H87neXoen+fpeXiP8/YeH+bveXiPD/P3Pr3HeXtPDvP35Dz+O5vH+WzzOJ/H+fR7nt6H9/g8Ps/Tc/g8Pccf+Hk6/sDP8+n4Az9Pxx/4eXp+X+fpeTqfX+fzeTqfz/P5PJ9f5/P5PJ9f5/P5df6Gz+f5df6Gz9PxN/weD+fxcP6Bv8PH+XD+gX/g4zz8gX/gwzzOf/Bv+HOf3uef+/Q+T/M8zfM0z9M8zdM8zdM+zdM+zfM0zfM0z9M8zdM8zdM8zdM8zdM8zdM+zfM+zfM+zPP6/O8/HeRwep/M8jsfjPD7Hz+N4fP7X5XGex+Gv7o+X5bBdf20XG4ZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGL5r2X4AnrQREgY+S+kAAAAASUVORK5CYII=">
-    <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALIAAAByCAMAAADbS6byAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURf4VZTunO6fbr9ut267brtux27Hbsdux27Hbsdux2/77/f7+/v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAnK7b6f79/f///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJv2fGMAAAAAdFJOUwD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AtY9FfQAACcRJREFUeNrt21sTgjAMBVD6/5/u7NChREqEGBp9956EInunpL6fG0V19bUf9t1uNfV19v32/T7N/7B0/37ofj7v68O2vN7Xp6P7urrvfTqG3/u+j+U9Dtt8fFp6269z2N7vsH7u6zN8+PzN0u99ObyvD9vyel+fju7r6r736Rh+7/s+lvc4bPPxaelta+7jsB7j6Zvep2N63scwfD+GfTy+Pobh+Zvep6N7e99H9/Y+Dtv7bZZ+72Po9z6Gfu9j2N7fYf3cx2f48Pmbpd/7cnhfH7bl9b4+Hd3X1X3v0zH83vd9LO9x2Obj09LbPp7DeY/D9zyePofzeZ6G83l6H87neXoen+fpeXiP8/YeH+bveXiPD/P3Pr3HeXtPDvP35Dz+O5vH+WzzOJ/H+fR7nt6H9/g8Ps/Tc/g8Pccf+Hk6/sDP8+n4Az9Pxx/4eXp+X+fpeTqfX+fzeTqfz/P5PJ9f5/P5PJ9f5/P5df6Gz+f5df6Gz9PxN/weD+fxcP6Bv8PH+XD+gX/g4zz8gX/gwzzOf/Bv+HOf3uef+/Q+T/M8zfM0z9M8zdM8zdM+zdM+zfM0zfM0z9M8zdM8zdM8zdM8zdM8zdM+zfM+zfM+zPP6/O8/HeRwep/M8jsfjPD7Hz+N4fP7X5XGex+Gv7o+X5bBdf20XG4ZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGIZhGL5r2X4AnrQREgY+S+kAAAAASUVORK5CYII=">
+    <!-- ⚾ 終極黑科技：動態 HTML5 Canvas 產生器 (完美呈現您提供的 image_82ca5f.png 經典棒球視覺) -->
+    <script>
+        (function() {
+            // 在瀏覽器記憶體中建立一塊 180x180 的高解析度畫布
+            const canvas = document.createElement('canvas');
+            canvas.width = 180;
+            canvas.height = 180;
+            const ctx = canvas.getContext('2d');
+
+            // 1. 繪製外層超大圓圈 (淡黃色底 #FEF9C3，藍框 #0E5FA3)
+            ctx.beginPath();
+            ctx.arc(90, 90, 80, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FEF9C3';
+            ctx.fill();
+            ctx.strokeStyle = '#0E5FA3';
+            ctx.lineWidth = 7;
+            ctx.stroke();
+
+            // 2. 繪製內層核心小圓圈 (白色棒球底 #FFFFFF，藍線 #0E5FA3)
+            ctx.beginPath();
+            ctx.arc(90, 90, 24, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+            ctx.strokeStyle = '#0E5FA3';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 3. 繪製左側紅色虛線縫線 (虛線間距符合 image_82ca5f.png)
+            ctx.beginPath();
+            ctx.arc(102, 90, 18, Math.PI - 0.75, Math.PI + 0.75);
+            ctx.strokeStyle = '#DC2626';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([3, 3]);
+            ctx.stroke();
+
+            // 4. 繪製右側紅色虛線縫線
+            ctx.beginPath();
+            ctx.arc(78, 90, 18, -0.75, 0.75);
+            ctx.strokeStyle = '#DC2626';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([3, 3]);
+            ctx.stroke();
+
+            // 將畫布即時輸出為 100% 標準相容、無損的真實 PNG 資料庫網址
+            const pngDataUrl = canvas.toDataURL('image/png');
+            
+            // 寫入給電腦/手機瀏覽器分頁使用的 Favicon 標籤
+            const linkIcon = document.createElement('link');
+            linkIcon.rel = 'icon';
+            linkIcon.type = 'image/png';
+            linkIcon.href = pngDataUrl;
+            document.head.appendChild(linkIcon);
+
+            // 寫入給 iOS 手機桌面「加入主畫面」使用的 Apple Touch Icon 標籤
+            const linkApple = document.createElement('link');
+            linkApple.rel = 'apple-touch-icon';
+            linkApple.sizes = '180x180';
+            linkApple.href = pngDataUrl;
+            document.head.appendChild(linkApple);
+        })();
+    </script>
 
     <!-- 載入 Google Fonts: Noto Sans TC (繁中) 與 Montserrat (美式運動風英文) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght=1,900&family=Noto+Sans+TC:wght@500;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&family=Noto+Sans+TC:wght@500;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     
