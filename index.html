@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026中華職棒明星對抗賽 票券登記系統</title>
+    
+    <!-- 社群分享預覽設定 -->
+    <meta property="og:title" content="2026中華職棒明星對抗賽 票券登記系統">
+    <meta property="og:description" content="7/18 - 7/19 台北大巨蛋對戰組合！TEAM STAR vs TEAM TAIWAN，請速點擊連結登記票券數量。">
+    <meta property="og:image" content="https://images.postimages.org/placeholder.png">
+    <meta property="og:type" content="website">
+
+    <!-- 載入 Google Fonts: Noto Sans TC (繁中) 與 Montserrat (美式運動風英文) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&family=Noto+Sans+TC:wght@500;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .font-sporty {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fefbeb; }
+        ::-webkit-scrollbar-thumb { background: #0e5fa3; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0a497e; }
+        
+        .baseball-theme-bg {
+            background-color: #fefcf0;
+            background-image: radial-gradient(#eab308 0.5px, transparent 0.5px), radial-gradient(#0e5fa3 0.5px, #fefcf0 0.5px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+
+        /* ⚠️ 警告閃爍與微縮放動畫效果 */
+        @keyframes warning-blink {
+            0%, 100% {
+                background-color: #dc2626; /* red-600 */
+                transform: scale(1);
+                box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.4), 0 2px 4px -1px rgba(220, 38, 38, 0.2);
+            }
+            50% {
+                background-color: #991b1b; /* red-800 */
+                transform: scale(1.03);
+                box-shadow: 0 10px 15px -3px rgba(153, 27, 27, 0.5), 0 4px 6px -2px rgba(153, 27, 27, 0.3);
+            }
+        }
+        .animate-warning-flash {
+            animation: warning-blink 1.2s infinite ease-in-out;
+        }
+
+        /* 運動對話框的立體陰影與風格 */
+        .sporty-bubble {
+            box-shadow: 8px 8px 0px 0px #0e5fa3;
+            border: 4px solid #0e5fa3;
+            position: relative;
+        }
+
+        .sporty-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 20px 20px 0;
+            border-style: solid;
+            border-color: #ffffff transparent;
+            display: block;
+            width: 0;
+            z-index: 10;
+        }
+        
+        .sporty-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 23px 23px 0;
+            border-style: solid;
+            border-color: #0e5fa3 transparent;
+            display: block;
+            width: 0;
+            z-index: 5;
+        }
+
+        .retro-shadow-text {
+            text-shadow: 2px 2px 0px #fefcf0, 5px 5px 0px #0e5fa3;
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        sporty: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="baseball-theme-bg text-gray-800 font-sans min-h-screen flex flex-col items-center py-8 px-4">
+
+    <!-- ⏰ 截止提示對話框 (時間到會自動霸屏顯示並替換為美式運動風蓋板) -->
+    <div id="deadlineScreen" class="hidden fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+        <div class="flex flex-col items-center max-w-lg w-full animate-bounce-short">
+            
+            <!-- 頂部：美式棒球時鐘徽章 -->
+            <div class="z-20 -mb-8 bg-[#eab308] border-4 border-[#0e5fa3] text-[#0e5fa3] rounded-full w-20 h-20 flex flex-col items-center justify-center shadow-lg transform -rotate-12">
+                <span class="text-3xl">⏰</span>
+                <span class="font-sporty text-[10px] tracking-widest -mt-1">TIME</span>
+            </div>
+
+            <!-- 主體對話框 -->
+            <div class="sporty-bubble bg-white rounded-3xl p-8 md:p-10 text-center w-full relative z-10">
+                
+                <!-- 對話框內部的運動紅藍縫線點綴 -->
+                <div class="absolute inset-2 border-2 border-dashed border-[#00875a] border-opacity-30 rounded-2xl pointer-events-none"></div>
+
+                <div class="space-y-4">
+                    <!-- 標題：美式運動重疊字 -->
+                    <h2 class="text-6xl md:text-7xl font-black text-[#dc2626] tracking-tighter uppercase retro-shadow-text font-sporty italic">
+                        OUT!
+                    </h2>
+                    
+                    <h3 class="text-2xl md:text-3xl font-black text-[#0e5fa3] tracking-tight mt-2">
+                        填報時間已到！
+                    </h3>
+
+                    <p class="text-gray-600 font-bold text-base md:text-lg max-w-xs mx-auto pt-2">
+                        本階段票券登記已正式關閉，<br>
+                        <span class="text-[#00875a] font-black text-xl">已無法填報</span>，感謝您的配合。
+                    </p>
+
+                    <!-- 下方精緻計分板風格的截止時間 -->
+                    <div class="bg-[#fefcf0] border-2 border-dashed border-[#eab308] rounded-xl p-4 mt-6">
+                        <div class="flex items-center justify-center space-x-2 text-xs font-black text-[#0e5fa3] tracking-widest uppercase">
+                            <span>★</span>
+                            <span class="font-mono">Deadline Info</span>
+                            <span>★</span>
+                        </div>
+                        <p class="text-2xl font-black text-[#0e5fa3] mt-1 tracking-wider font-mono">
+                            2026 / 06 / 30 <span class="text-red-600">00:00</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 對話框下方的可愛提示氣泡小文字 -->
+            <div class="mt-8 text-yellow-100 text-xs font-bold bg-[#0e5fa3] bg-opacity-90 py-1.5 px-4 rounded-full shadow border border-blue-400">
+                如有緊急票務疑問，請與您的介紹人聯繫 ⚾
+            </div>
+        </div>
+    </div>
+
+    <!-- 表單主要容器 -->
+    <div id="mainContainer" class="bg-white shadow-2xl rounded-2xl w-full max-w-2xl overflow-hidden border-4 border-[#0e5fa3]">
+        
+        <!-- 頂部列 Banner -->
+        <div class="bg-gradient-to-r from-[#0e5fa3] via-[#00875a] to-[#eab308] text-white py-8 px-6 text-center relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 w-44 h-44 rounded-full border-8 border-dashed border-white"></div>
+            <div class="absolute -left-10 -top-10 opacity-10 w-44 h-44 rounded-full border-8 border-dashed border-white"></div>
+            
+            <div class="inline-block bg-white text-[#0e5fa3] font-black text-xs px-3 py-1 rounded-full uppercase tracking-widest mb-2 shadow font-sporty italic">
+                CPBL ALL-STAR GAME 2026
+            </div>
+            <h1 class="text-3xl font-black tracking-wider drop-shadow-md">2026中華職棒明星對抗賽 票券登記系統</h1>
+            <p class="text-yellow-100 mt-2 font-bold tracking-wide">TEAM STAR ⭐ VS ⭐ TEAM TAIWAN</p>
+            
+            <!-- 📍 時間地點與 ⚠️ 警告 合併為一行 -->
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-2 px-2">
+                <span class="text-white text-xs bg-black bg-opacity-30 px-3 py-1.5 rounded-full font-semibold whitespace-nowrap">
+                    📍 7/18 - 7/19 台北大巨蛋
+                </span>
+                <span class="animate-warning-flash text-white text-[10px] md:text-xs font-black py-1.5 px-4 rounded-full inline-flex items-center border border-red-400 transition transform duration-150 whitespace-nowrap">
+                    ⚠️ 警告：請勿將此連結轉傳，如觸犯規定後台將會記錄
+                </span>
+            </div>
+
+            <!-- ⏳ 填報期限與倒數計時區塊 -->
+            <div class="mt-3.5 text-[11px] md:text-xs text-yellow-200 font-extrabold tracking-wider flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+                <span>📅 填報期限：6/30 00:00</span>
+                <span class="hidden md:inline text-yellow-500 opacity-50">|</span>
+                <div class="flex items-center space-x-1.5">
+                    <span>⏱️ 填報剩餘時間：</span>
+                    <span id="countdownTimer" class="bg-black bg-opacity-40 text-yellow-300 px-2.5 py-0.5 rounded-lg font-mono text-xs border border-yellow-500 border-opacity-30">計算中...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表單內容 -->
+        <form id="ticketForm" class="p-6 md:p-8 space-y-8 bg-white">
+            <!-- 1: 登記姓名 -->
+            <div class="space-y-3">
+                <label class="block text-lg font-black text-[#0e5fa3] flex items-center" for="name">
+                    <span class="w-2 h-6 bg-[#0e5fa3] rounded-full mr-2 inline-block"></span>
+                    1. 登記姓名 <span class="text-red-500 ml-1">*</span>
+                </label>
+                <input type="text" id="name" name="name" required placeholder="請輸入您的真實姓名" 
+                       class="w-full border-2 border-gray-300 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-[#0e5fa3] text-lg transition duration-150">
+            </div>
+
+            <!-- 2: 介紹人 -->
+            <div class="space-y-3">
+                <label class="block text-lg font-black text-[#0e5fa3] flex items-center">
+                    <span class="w-2 h-6 bg-[#0e5fa3] rounded-full mr-2 inline-block"></span>
+                    2. 介紹人 <span class="text-red-500 ml-1">*</span>
+                </label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-[#fefcf0] p-4 rounded-xl border-2 border-yellow-100">
+                    <label class="flex items-center space-x-3 cursor-pointer p-3 bg-white rounded-lg hover:bg-yellow-50 transition border border-gray-200">
+                        <input type="radio" name="referrer" value="蔡孜鵬" required class="h-5 w-5 text-[#0e5fa3] focus:ring-[#0e5fa3]">
+                        <span class="text-lg font-bold text-gray-700">蔡孜鵬</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer p-3 bg-white rounded-lg hover:bg-yellow-50 transition border border-gray-200">
+                        <input type="radio" name="referrer" value="蔡捷葳" class="h-5 w-5 text-[#0e5fa3] focus:ring-[#0e5fa3]">
+                        <span class="text-lg font-bold text-gray-700">蔡捷葳</span>
+                    </label>
+                    <label class="flex items-center space-x-3 cursor-pointer p-3 bg-white rounded-lg hover:bg-yellow-50 transition border border-gray-200">
+                        <input type="radio" name="referrer" value="黃玉廷" class="h-5 w-5 text-[#0e5fa3] focus:ring-[#0e5fa3]">
+                        <span class="text-lg font-bold text-gray-700">黃玉廷</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 3: 觀賽日期 -->
+            <div class="space-y-3">
+                <label class="block text-lg font-black text-[#0e5fa3] flex items-center">
+                    <span class="w-2 h-6 bg-[#0e5fa3] rounded-full mr-2 inline-block"></span>
+                    3. 觀賽日期 (可複選) <span class="text-red-500 ml-1">*</span>
+                </label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+                    <label class="flex items-center space-x-4 cursor-pointer p-3 bg-white rounded-lg hover:bg-blue-100 hover:border-[#0e5fa3] transition border-2 border-transparent">
+                        <input type="checkbox" name="date" value="7/18（六）" class="date-checkbox h-6 w-6 text-[#0e5fa3] rounded focus:ring-[#0e5fa3]">
+                        <div>
+                            <span class="text-lg font-extrabold text-blue-900 block">7/18（六）</span>
+                        </div>
+                    </label>
+                    <label class="flex items-center space-x-4 cursor-pointer p-3 bg-white rounded-lg hover:bg-blue-100 hover:border-[#00875a] transition border-2 border-transparent">
+                        <input type="checkbox" name="date" value="7/19（日）" class="date-checkbox h-6 w-6 text-[#00875a] rounded focus:ring-[#00875a]">
+                        <div>
+                            <span class="text-lg font-extrabold text-green-950 block">7/19（日）</span>
+                        </div>
+                    </label>
+                </div>
+                <p id="dateError" class="text-red-600 text-md font-bold hidden mt-1">⚠️ 請至少選擇一個日期！</p>
+            </div>
+
+            <!-- 動態張數選擇區塊 -->
+            <div id="quantitySection" class="hidden bg-[#fefcf0] border-2 border-yellow-200 rounded-xl p-6 space-y-6 shadow-inner">
+                <h3 id="quantityTitle" class="text-xl font-black text-yellow-800 border-b-2 border-yellow-100 pb-2 flex items-center">
+                    <span class="mr-2">🎫</span> 請選擇票券張數
+                </h3>
+                
+                <!-- 7/18 數量 -->
+                <div id="qty18Section" class="hidden space-y-3">
+                    <label class="block font-black text-[#0e5fa3] text-lg" id="label18">您所需的張數 <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-5 gap-2">
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-yellow-50 hover:border-[#eab308] transition"><input type="radio" name="qty18" value="1" class="h-4 w-4 mb-1 text-[#0e5fa3]"><span class="font-bold text-sm">1張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-yellow-50 hover:border-[#eab308] transition"><input type="radio" name="qty18" value="2" class="h-4 w-4 mb-1 text-[#0e5fa3]"><span class="font-bold text-sm">2張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-yellow-50 hover:border-[#eab308] transition"><input type="radio" name="qty18" value="3" class="h-4 w-4 mb-1 text-[#0e5fa3]"><span class="font-bold text-sm">3張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-yellow-50 hover:border-[#eab308] transition"><input type="radio" name="qty18" value="4" class="h-4 w-4 mb-1 text-[#0e5fa3]"><span class="font-bold text-sm">4張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-yellow-50 hover:border-[#eab308] transition"><input type="radio" name="qty18" value="5" class="h-4 w-4 mb-1 text-[#0e5fa3]"><span class="font-bold text-sm">5張</span></label>
+                    </div>
+                </div>
+
+                <!-- 7/19 數量 -->
+                <div id="qty19Section" class="hidden space-y-3">
+                    <label class="block font-black text-[#00875a] text-lg" id="label19">您所需的張數 <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-5 gap-2">
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-green-50 hover:border-[#00875a] transition"><input type="radio" name="qty19" value="1" class="h-4 w-4 mb-1 text-[#00875a]"><span class="font-bold text-sm">1張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-green-50 hover:border-[#00875a] transition"><input type="radio" name="qty19" value="2" class="h-4 w-4 mb-1 text-[#00875a]"><span class="font-bold text-sm">2張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-green-50 hover:border-[#00875a] transition"><input type="radio" name="qty19" value="3" class="h-4 w-4 mb-1 text-[#00875a]"><span class="font-bold text-sm">3張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-green-50 hover:border-[#00875a] transition"><input type="radio" name="qty19" value="4" class="h-4 w-4 mb-1 text-[#00875a]"><span class="font-bold text-sm">4張</span></label>
+                        <label class="flex flex-col items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:bg-green-50 hover:border-[#00875a] transition"><input type="radio" name="qty19" value="5" class="h-4 w-4 mb-1 text-[#00875a]"><span class="font-bold text-sm">5張</span></label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4: 特殊需求 -->
+            <div class="space-y-3">
+                <label class="block text-lg font-black text-gray-800 flex items-center" for="specialRequest">
+                    <span class="w-2 h-6 bg-gray-400 rounded-full mr-2 inline-block"></span>
+                    4. 是否有特殊需求 <span class="text-gray-500 text-sm font-normal">(選填)</span>
+                </label>
+                <textarea id="specialRequest" name="specialRequest" rows="2" placeholder="例如：需要跟誰坐等... 若無可空白" 
+                          class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-[#0e5fa3] text-lg transition duration-150"></textarea>
+            </div>
+
+            <!-- 確認送出按鈕 -->
+            <div class="pt-6 border-t-2 border-gray-100">
+                <button type="button" onclick="previewSubmit()" class="w-full bg-gradient-to-r from-[#0e5fa3] to-[#00875a] hover:from-[#0a497e] hover:to-[#006844] text-white font-black text-xl py-4 px-4 rounded-xl transition duration-200 shadow-lg active:scale-95 transform">
+                    🏆 確認資料並準備送出
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 確認送出彈跳視窗 -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh] border-4 border-[#eab308]">
+            <div class="bg-gradient-to-r from-[#0e5fa3] to-[#00875a] text-white px-6 py-5 flex-shrink-0 text-center">
+                <h2 class="text-2xl font-black tracking-wider">⚾ 請確認您的登記資訊</h2>
+            </div>
+            <div class="p-6 space-y-4 overflow-y-auto bg-yellow-50 bg-opacity-30 text-lg">
+                <div class="grid grid-cols-3 gap-2 border-b border-gray-200 pb-3">
+                    <span class="text-gray-500 font-extrabold">登記姓名:</span>
+                    <span id="c-name" class="col-span-2 font-black text-gray-900"></span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b border-gray-200 pb-3">
+                    <span class="text-gray-500 font-extrabold">介紹人:</span>
+                    <span id="c-referrer" class="col-span-2 font-black text-gray-900"></span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 border-b border-gray-200 pb-3">
+                    <span class="text-gray-500 font-extrabold">選擇日期:</span>
+                    <span id="c-dates" class="col-span-2 font-black text-gray-900"></span>
+                </div>
+                <div id="c-qty18-container" class="grid grid-cols-3 gap-2 border-b border-gray-200 pb-3 hidden">
+                    <span class="text-gray-500 font-extrabold">7/18 張數:</span>
+                    <span id="c-qty18" class="col-span-2 font-black text-[#0e5fa3] text-2xl"></span>
+                </div>
+                <div id="c-qty19-container" class="grid grid-cols-3 gap-2 border-b border-gray-200 pb-3 hidden">
+                    <span class="text-gray-500 font-extrabold">7/19 張數:</span>
+                    <span id="c-qty19" class="col-span-2 font-black text-[#00875a] text-2xl"></span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 pb-2">
+                    <span class="text-gray-500 font-extrabold">特殊需求:</span>
+                    <span id="c-special" class="col-span-2 font-black text-gray-900 break-words"></span>
+                </div>
+                <p class="text-sm text-red-700 mt-4 font-black bg-red-50 p-3 rounded-xl border border-red-200">
+                    ⚠️ 送出後將直接寫入後台統計，請務必確定上方資料無誤。
+                </p>
+            </div>
+            <div class="px-6 py-4 bg-white flex justify-end space-x-3 flex-shrink-0 border-t border-gray-200">
+                <button onclick="closeModal()" class="w-1/3 py-3.5 bg-gray-200 hover:bg-gray-300 text-gray-800 font-black rounded-xl transition text-lg active:scale-95">修改</button>
+                <button onclick="submitToGoogle()" id="submitBtn" class="w-2/3 py-3.5 bg-gradient-to-r from-[#0e5fa3] to-[#00875a] text-white font-black rounded-xl hover:from-[#0a497e] hover:to-[#006844] transition flex items-center justify-center text-lg active:scale-95 shadow-md">
+                    <span>確定送出</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成功提示視窗 -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-sm w-full border-4 border-[#00875a]">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-3xl font-black text-gray-800 mb-3">登記成功！</h2>
+            <p class="text-gray-600 mb-8 text-lg font-medium">您的票券資訊已成功送出並統計至後台。</p>
+            <button onclick="location.reload()" class="w-full bg-[#00875a] hover:bg-[#006844] text-white font-black text-xl rounded-xl py-4 transition shadow-lg active:scale-95">完成關閉</button>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================
+        // ⏰ 截止日期檢查機制 (正式上線時間設定)
+        // =========================================================
+        const DEADLINE_TIME = new Date("2026/06/30 00:00:00").getTime();
+
+        function checkDeadline() {
+            const currentTime = new Date().getTime();
+            const distance = DEADLINE_TIME - currentTime;
+
+            // 更新倒數計時器文字
+            updateCountdown(distance);
+
+            if (currentTime >= DEADLINE_TIME) {
+                // 時間到了，啟動蓋台提示並隱藏填報表單
+                document.getElementById('deadlineScreen').classList.remove('hidden');
+                document.getElementById('mainContainer').classList.add('hidden');
+                return true; // 已截止
+            }
+            return false; // 尚未截止
+        }
+
+        // 倒數計時渲染邏輯
+        function updateCountdown(distance) {
+            const timerElement = document.getElementById('countdownTimer');
+            if (!timerElement) return;
+
+            if (distance <= 0) {
+                timerElement.innerText = "已截止填報";
+                timerElement.classList.add('text-red-400');
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // 格式化顯示 (補零)
+            const d = days > 0 ? `${days} 天 ` : "";
+            const h = String(hours).padStart(2, '0');
+            const m = String(minutes).padStart(2, '0');
+            const s = String(seconds).padStart(2, '0');
+
+            timerElement.innerText = `${d}${h} 小時 ${m} 分 ${s} 秒`;
+        }
+
+        // 每秒及初始化時自動檢查時間，防止使用者跨越截止時間填報
+        setInterval(checkDeadline, 1000);
+        window.addEventListener('DOMContentLoaded', checkDeadline);
+
+        // Google Apps Script 網址
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBW5_298v25LaMjJdaJiO1zomu4WJ_XN17MxQu_Ld62KhgVst9L7yj6ZQklIrO0VP0GA/exec';
+
+        const checkboxes = document.querySelectorAll('.date-checkbox');
+        const quantitySection = document.getElementById('quantitySection');
+        const quantityTitle = document.getElementById('quantityTitle');
+        const qty18Section = document.getElementById('qty18Section');
+        const qty19Section = document.getElementById('qty19Section');
+        const label18 = document.getElementById('label18');
+        const label19 = document.getElementById('label19');
+        const dateError = document.getElementById('dateError');
+
+        checkboxes.forEach(cb => cb.addEventListener('change', updateDynamicSection));
+
+        function updateDynamicSection() {
+            const is18Checked = document.querySelector('input[value="7/18（六）"]').checked;
+            const is19Checked = document.querySelector('input[value="7/19（日）"]').checked;
+
+            dateError.classList.add('hidden');
+
+            if (!is18Checked && !is19Checked) {
+                quantitySection.classList.add('hidden');
+                document.querySelectorAll('input[name="qty18"]').forEach(r => r.checked = false);
+                document.querySelectorAll('input[name="qty19"]').forEach(r => r.checked = false);
+                return;
+            }
+
+            quantitySection.classList.remove('hidden');
+
+            if (is18Checked && is19Checked) {
+                quantityTitle.innerHTML = "🏆 您已選擇 7/18 及 7/19，請選擇張數";
+                label18.innerHTML = "7/18（六）您所需的張數 <span class='text-red-500'>*</span>";
+                label19.innerHTML = "7/19（日）您所需的張數 <span class='text-red-500'>*</span>";
+                qty18Section.classList.remove('hidden');
+                qty19Section.classList.remove('hidden');
+                setRequired('qty18', true);
+                setRequired('qty19', true);
+            } else if (is18Checked) {
+                quantityTitle.innerHTML = "⭐ 您已選擇 7/18（六），請選擇張數";
+                label18.innerHTML = "您所需的張數 <span class='text-red-500'>*</span>";
+                qty18Section.classList.remove('hidden');
+                qty19Section.classList.add('hidden');
+                setRequired('qty18', true);
+                setRequired('qty19', false);
+                document.querySelectorAll('input[name="qty19"]').forEach(r => r.checked = false);
+            } else if (is19Checked) {
+                quantityTitle.innerHTML = "⚾ 您已選擇 7/19（日），請選擇張數";
+                label19.innerHTML = "您所需的張數 <span class='text-red-500'>*</span>";
+                qty18Section.classList.add('hidden');
+                qty19Section.classList.remove('hidden');
+                setRequired('qty18', false);
+                setRequired('qty19', true);
+                document.querySelectorAll('input[name="qty18"]').forEach(r => r.checked = false);
+            }
+        }
+
+        function setRequired(name, isRequired) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(radio => radio.required = isRequired);
+        }
+
+        function previewSubmit() {
+            // 送出前再次嚴格驗證時間
+            if (checkDeadline()) return;
+
+            const form = document.getElementById('ticketForm');
+            const is18Checked = document.querySelector('input[value="7/18（六）"]').checked;
+            const is19Checked = document.querySelector('input[value="7/19（日）"]').checked;
+
+            if (!is18Checked && !is19Checked) {
+                dateError.classList.remove('hidden');
+                dateError.scrollIntoView({behavior: "smooth", block: "center"});
+                return;
+            }
+
+            if (!form.reportValidity()) return;
+
+            const formData = new FormData(form);
+            document.getElementById('c-name').innerText = formData.get('name');
+            document.getElementById('c-referrer').innerText = formData.get('referrer');
+            
+            const specialReq = formData.get('specialRequest').trim();
+            document.getElementById('c-special').innerText = specialReq !== "" ? specialReq : "無";
+            
+            let dates = [];
+            if(is18Checked) dates.push("7/18（六）");
+            if(is19Checked) dates.push("7/19（日）");
+            document.getElementById('c-dates').innerText = dates.join("、");
+
+            if (is18Checked) {
+                document.getElementById('c-qty18-container').classList.remove('hidden');
+                document.getElementById('c-qty18').innerText = formData.get('qty18') + " 張";
+            } else {
+                document.getElementById('c-qty18-container').classList.add('hidden');
+            }
+
+            if (is19Checked) {
+                document.getElementById('c-qty19-container').classList.remove('hidden');
+                document.getElementById('c-qty19').innerText = formData.get('qty19') + " 張";
+            } else {
+                document.getElementById('c-qty19-container').classList.add('hidden');
+            }
+
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        // 關閉視窗
+        function closeModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        function submitToGoogle() {
+            // 送出最終關頭嚴格驗證時間
+            if (checkDeadline()) {
+                closeModal();
+                return;
+            }
+
+            const form = document.getElementById('ticketForm');
+            const formData = new FormData(form);
+            const submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                登記傳送中...
+            `;
+            submitBtn.disabled = true;
+
+            const data = {
+                name: formData.get('name'),
+                referrer: formData.get('referrer'),
+                date18: document.querySelector('input[value="7/18（六）"]').checked ? "V" : "",
+                qty18: formData.get('qty18') || "0",
+                date19: document.querySelector('input[value="7/19（日）"]').checked ? "V" : "",
+                qty19: formData.get('qty19') || "0",
+                specialReq: formData.get('specialRequest').trim(),
+                timestamp: new Date().toLocaleString()
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            })
+            .then(response => {
+                closeModal();
+                document.getElementById('successModal').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error!', error);
+                alert('系統發生連線問題，請檢查網路或重新整理。');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = '確定送出';
+                submitBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
