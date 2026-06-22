@@ -1,0 +1,640 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>票券統計系統 - 後台管理儀表板</title>
+    
+    <!-- 載入 Google Fonts: Noto Sans TC (繁中) 與 Montserrat (美式運動風英文) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&family=Noto+Sans+TC:wght@500;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+        
+        .font-sporty {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #fefbeb; }
+        ::-webkit-scrollbar-thumb { background: #0e5fa3; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0a497e; }
+        
+        .baseball-pattern {
+            background-color: #fefcf0;
+            background-image: radial-gradient(#eab308 0.5px, transparent 0.5px), radial-gradient(#0e5fa3 0.5px, #fefcf0 0.5px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-[#fcfaf2] text-gray-800 min-h-screen">
+
+    <!-- 密碼登入頁面 (多組密碼支援) -->
+    <div id="loginGate" class="fixed inset-0 bg-gray-950 bg-opacity-95 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-[#eab308]">
+            <div class="w-16 h-16 bg-yellow-100 text-[#0e5fa3] rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[#0e5fa3]">
+                <span class="text-2xl font-black">⚾</span>
+            </div>
+            <h2 class="text-2xl font-black mb-2 text-[#0e5fa3]">2026明星賽 票務後台統計系統</h2>
+            <p class="text-gray-500 mb-6 text-sm">請輸入您的個人專屬管理密碼</p>
+            
+            <div class="space-y-4">
+                <input type="password" id="passwordInput" placeholder="請輸入登入密碼" 
+                       class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-[#0e5fa3] focus:border-transparent">
+                <p id="loginError" class="text-red-500 text-sm font-semibold hidden">⚠️ 密碼錯誤，請重新輸入</p>
+                <button onclick="checkPassword()" class="w-full bg-gradient-to-r from-[#0e5fa3] to-[#00875a] hover:from-[#0a497e] hover:to-[#006844] text-white font-black py-3 rounded-xl transition shadow-md active:scale-95">
+                    驗證登入
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主儀表板 (登入成功後顯示) -->
+    <div id="dashboard" class="hidden max-w-7xl mx-auto px-4 py-8 space-y-8">
+        
+        <!-- 頂部列 -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-200 pb-6">
+            <div>
+                <div class="flex items-center space-x-2">
+                    <span class="bg-[#0e5fa3] text-white text-xs font-black px-2.5 py-1 rounded-md uppercase tracking-wider font-sporty">CPBL 2026</span>
+                    <span class="text-[#00875a] font-black text-sm">⭐ 明星對抗賽 ⚾</span>
+                </div>
+                <h1 class="text-3xl font-black text-[#0e5fa3] tracking-wide mt-1">後台數據分析儀表板</h1>
+                <p class="text-gray-500 text-sm">即時統計 7/18-7/19 台北大巨蛋票券登記回覆（支援即時修改同步）</p>
+            </div>
+            <div class="flex flex-col md:flex-row items-end md:items-center gap-3">
+                <div class="text-right">
+                    <!-- 歡迎標語，顯示登入者的名字 -->
+                    <p class="text-sm font-black text-blue-900" id="welcomeUserText">歡迎回來</p>
+                    <span id="lastUpdateText" class="text-xs font-semibold text-gray-400">尚未載入數據</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="fetchData()" id="refreshBtn" class="bg-gradient-to-r from-[#0e5fa3] to-[#0a497e] hover:from-[#0a497e] hover:to-[#083a64] text-white font-black px-5 py-2.5 rounded-xl transition flex items-center shadow active:scale-95">
+                        <svg id="refreshIcon" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18"></path></svg>
+                        <span>同步試算表數據</span>
+                    </button>
+                    <button onclick="logout()" class="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-bold px-4 py-2.5 rounded-xl transition text-sm">
+                        登出
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 數據載入狀態提示 -->
+        <div id="loadingStatus" class="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-6 text-center hidden">
+            <svg class="animate-spin h-8 w-8 text-[#0e5fa3] mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <p class="font-bold text-lg" id="loadingText">正在從 Google 試算表即時抓取最新資料中...</p>
+        </div>
+
+        <div id="dashboardContent" class="space-y-8">
+            <!-- 第一排：統計總覽卡片 (明星賽配色) -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- 總登記次數 (深藍) -->
+                <div class="bg-gradient-to-br from-[#0e5fa3] to-[#083a64] text-white p-6 rounded-2xl shadow-md flex items-center space-x-4 border border-[#0e5fa3]">
+                    <div class="p-3 bg-white bg-opacity-20 rounded-xl text-white">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-blue-200 font-black uppercase tracking-wider">總登記人數</p>
+                        <h3 id="statTotalUsers" class="text-3xl font-black mt-1">0 人</h3>
+                    </div>
+                </div>
+
+                <!-- 7/18 票券總數 (黃金色) -->
+                <div class="bg-gradient-to-br from-[#eab308] to-[#ca8a04] text-white p-6 rounded-2xl shadow-md flex items-center space-x-4 border border-[#eab308]">
+                    <div class="p-3 bg-white bg-opacity-20 rounded-xl text-white">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-yellow-100 font-black uppercase tracking-wider">7/18(六) </p>
+                        <h3 id="statTotal18" class="text-3xl font-black mt-1">0 張</h3>
+                    </div>
+                </div>
+
+                <!-- 7/19 票券總數 (大巨蛋綠) -->
+                <div class="bg-gradient-to-br from-[#00875a] to-[#005e3e] text-white p-6 rounded-2xl shadow-md flex items-center space-x-4 border border-[#00875a]">
+                    <div class="p-3 bg-white bg-opacity-20 rounded-xl text-white">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-green-100 font-black uppercase tracking-wider">7/19(日) </p>
+                        <h3 id="statTotal19" class="text-3xl font-black mt-1">0 張</h3>
+                    </div>
+                </div>
+
+                <!-- 兩天票券總計 (酷炫紫) -->
+                <div class="bg-gradient-to-br from-[#7c3aed] to-[#5b21b6] text-white p-6 rounded-2xl shadow-md flex items-center space-x-4 border border-[#7c3aed]">
+                    <div class="p-3 bg-white bg-opacity-20 rounded-xl text-white">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-purple-100 font-black uppercase tracking-wider">雙日累積總票數</p>
+                        <h3 id="statGrandTotal" class="text-3xl font-black mt-1">0 張</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二排（調整後）：日期分組登記名單 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 7/18（六）名單 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-yellow-200 flex flex-col h-[400px]">
+                    <div class="flex justify-between items-center border-b border-yellow-100 pb-3 flex-shrink-0">
+                        <h3 class="text-lg font-black text-yellow-800 flex items-center">
+                            <span class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                            7/18（六）⭐ 
+                        </h3>
+                        <span id="count18" class="bg-yellow-100 text-yellow-800 text-xs font-black px-2.5 py-1 rounded-full">0 筆登記</span>
+                    </div>
+                    <div class="overflow-y-auto flex-grow divide-y mt-2" id="list18Container">
+                        <!-- 動態 7/18 -->
+                    </div>
+                </div>
+
+                <!-- 7/19（日）名單 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-green-200 flex flex-col h-[400px]">
+                    <div class="flex justify-between items-center border-b border-green-100 pb-3 flex-shrink-0">
+                        <h3 class="text-lg font-black text-green-800 flex items-center">
+                            <span class="w-3 h-3 bg-[#00875a] rounded-full mr-2"></span>
+                            7/19（日）⚾
+                        </h3>
+                        <span id="count19" class="bg-green-100 text-green-800 text-xs font-black px-2.5 py-1 rounded-full">0 筆登記</span>
+                    </div>
+                    <div class="overflow-y-auto flex-grow divide-y mt-2" id="list19Container">
+                        <!-- 動態 7/19 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三排（調整後）：特殊需求快速檢視區 (滿版設計) -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-2 border-yellow-100 flex flex-col h-[300px]">
+                <h3 class="text-lg font-black border-b border-gray-100 pb-3 text-[#0e5fa3] flex-shrink-0 flex items-center">
+                    <span class="mr-2">📝</span> 特殊需求與備註
+                </h3>
+                <div class="overflow-y-auto flex-grow divide-y mt-2" id="specialRequestsContainer">
+                    <!-- 動態特殊需求 -->
+                </div>
+            </div>
+
+            <!-- 第四排（調整後）：詳細資料表格 -->
+            <div class="bg-white rounded-2xl shadow-sm border-2 border-gray-100 overflow-hidden">
+                <!-- 表格控制列 -->
+                <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gray-50 bg-opacity-50">
+                    <h3 class="text-lg font-black text-[#0e5fa3]">📋 登記名單總表（支援線上即時編輯）</h3>
+                    <div class="w-full md:w-80">
+                        <input type="text" id="searchInput" oninput="filterData()" placeholder="快速搜尋姓名、介紹人、備註..." 
+                               class="w-full border-2 border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#0e5fa3] text-sm">
+                    </div>
+                </div>
+
+                <!-- 表格本體 -->
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left border-collapse min-w-[900px]">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-sm font-bold border-b">
+                                <th class="p-4 w-40">登記時間</th>
+                                <th class="p-4 w-36">姓名</th>
+                                <th class="p-4 w-32">介紹人</th>
+                                <th class="p-4 w-40">7/18 (六)</th>
+                                <th class="p-4 w-40">7/19 (日)</th>
+                                <th class="p-4">特殊需求</th>
+                                <th class="p-4 w-28 text-center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-gray-100 text-gray-700">
+                            <!-- 動態渲染 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noDataText" class="p-10 text-center text-gray-400 font-bold hidden">沒有找到任何登記資料</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 定義帳號密碼與其對應的顯示稱呼
+        const ADMIN_ACCOUNTS = {
+            '2026': '系統管理員',
+            '0708': '蔡孜鵬',
+            '0330': '蔡捷葳',
+            '9951': '蔡其昌',
+            '0806': '黃斯駿'
+        };
+
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBW5_298v25LaMjJdaJiO1zomu4WJ_XN17MxQu_Ld62KhgVst9L7yj6ZQklIrO0VP0GA/exec';
+        
+        let allResponses = [];
+        let currentlyEditingId = null; // 儲存目前正在編輯的列（以時間戳記為識別符）
+
+        window.onload = function() {
+            const loggedInUser = localStorage.getItem('adminLoggedInUser');
+            if (loggedInUser) {
+                document.getElementById('loginGate').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('welcomeUserText').innerText = `歡迎回來，${loggedInUser} ⚾`;
+                fetchData();
+            }
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const errorText = document.getElementById('loginError');
+            
+            if (ADMIN_ACCOUNTS.hasOwnProperty(input)) {
+                const userName = ADMIN_ACCOUNTS[input];
+                localStorage.setItem('adminLoggedInUser', userName);
+                
+                document.getElementById('loginGate').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('welcomeUserText').innerText = `歡迎回來，${userName} ⚾`;
+                errorText.classList.add('hidden');
+                fetchData();
+            } else {
+                errorText.classList.remove('hidden');
+            }
+        }
+
+        // 登出
+        function logout() {
+            localStorage.removeItem('adminLoggedInUser');
+            location.reload();
+        }
+
+        // 獲取數據
+        function fetchData() {
+            const loading = document.getElementById('loadingStatus');
+            const loadingText = document.getElementById('loadingText');
+            const content = document.getElementById('dashboardContent');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const refreshIcon = document.getElementById('refreshIcon');
+
+            loadingText.innerText = "正在從 Google 試算表即時抓取最新資料中...";
+            loading.classList.remove('hidden');
+            content.classList.add('opacity-40');
+            refreshBtn.disabled = true;
+            refreshIcon.classList.add('animate-spin');
+
+            currentlyEditingId = null; // 重設編輯狀態
+
+            fetch(GOOGLE_SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    // Google 試算表回傳資料，我們保持時間戳記新到舊
+                    allResponses = data.reverse();
+                    renderDashboard(allResponses);
+                    
+                    const now = new Date();
+                    document.getElementById('lastUpdateText').innerText = `最後更新：${now.toLocaleTimeString()}`;
+                })
+                .catch(err => {
+                    console.error("讀取失敗：", err);
+                    alert("連線失敗，請檢查網路連線。");
+                })
+                .finally(() => {
+                    loading.classList.add('hidden');
+                    content.classList.remove('opacity-40');
+                    refreshBtn.disabled = false;
+                    refreshIcon.classList.remove('animate-spin');
+                });
+        }
+
+        // 渲染畫面
+        function renderDashboard(data) {
+            let totalUsers = data.length;
+            let total18 = 0;
+            let total19 = 0;
+            let specialRequests = [];
+
+            const list18Container = document.getElementById('list18Container');
+            const list19Container = document.getElementById('list19Container');
+            list18Container.innerHTML = '';
+            list19Container.innerHTML = '';
+
+            let count18 = 0;
+            let count19 = 0;
+
+            data.forEach(item => {
+                const name = item["姓名"];
+                const is18 = item["有選7/18"] === "V";
+                const is19 = item["有選7/19"] === "V";
+                const qty18 = parseInt(item["7/18張數"]) || 0;
+                const qty19 = parseInt(item["7/19張數"]) || 0;
+                
+                total18 += qty18;
+                total19 += qty19;
+
+                const referrer = item["介紹人"];
+
+                const special = item["特殊需求"] ? item["特殊需求"].trim() : "";
+                if (special && special !== "無" && special !== "") {
+                    specialRequests.push({
+                        name: name,
+                        text: special,
+                        time: item["時間戳記"]
+                    });
+                }
+
+                // 7/18 列表 (明星黃風格)
+                if (is18 && qty18 > 0) {
+                    count18++;
+                    list18Container.innerHTML += `
+                        <div class="py-3 flex justify-between items-center hover:bg-yellow-50 transition px-2">
+                            <div>
+                                <p class="font-extrabold text-gray-800">${name}</p>
+                                <p class="text-xs text-gray-400 font-bold">介紹人: ${referrer || '無'}</p>
+                            </div>
+                            <span class="bg-yellow-100 text-yellow-800 font-black px-3 py-1 rounded-lg text-sm border border-yellow-200">${qty18} 張</span>
+                        </div>
+                    `;
+                }
+
+                // 7/19 列表 (台灣綠風格)
+                if (is19 && qty19 > 0) {
+                    count19++;
+                    list19Container.innerHTML += `
+                        <div class="py-3 flex justify-between items-center hover:bg-green-50 transition px-2">
+                            <div>
+                                <p class="font-extrabold text-gray-800">${name}</p>
+                                <p class="text-xs text-gray-400 font-bold">介紹人: ${referrer || '無'}</p>
+                            </div>
+                            <span class="bg-green-100 text-[#00875a] font-black px-3 py-1 rounded-lg text-sm border border-green-200">${qty19} 張</span>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('statTotalUsers').innerText = `${totalUsers} 人`;
+            document.getElementById('statTotal18').innerText = `${total18} 張`;
+            document.getElementById('statTotal19').innerText = `${total19} 張`;
+            document.getElementById('statGrandTotal').innerText = `${total18 + total19} 張`;
+
+            document.getElementById('count18').innerText = `${count18} 筆登記`;
+            document.getElementById('count19').innerText = `${count19} 筆登記`;
+
+            if (count18 === 0) {
+                list18Container.innerHTML = `<div class="flex items-center justify-center h-full text-gray-400 text-sm font-bold">無 7/18 登記資料</div>`;
+            }
+            if (count19 === 0) {
+                list19Container.innerHTML = `<div class="flex items-center justify-center h-full text-gray-400 text-sm font-bold">無 7/19 登記資料</div>`;
+            }
+
+            // 特殊需求
+            const specialContainer = document.getElementById('specialRequestsContainer');
+            specialContainer.innerHTML = '';
+            
+            if (specialRequests.length === 0) {
+                specialContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                        <p class="text-sm font-bold">目前沒有任何特殊需求</p>
+                    </div>
+                `;
+            } else {
+                specialRequests.forEach(req => {
+                    const html = `
+                        <div class="py-3 px-1 hover:bg-gray-50 transition">
+                            <div class="flex justify-between items-center text-xs text-gray-400 mb-1">
+                                <span class="font-black text-gray-700">${req.name}</span>
+                                <span>${req.time}</span>
+                            </div>
+                            <p class="text-sm font-bold text-gray-800">${req.text}</p>
+                        </div>
+                    `;
+                    specialContainer.innerHTML += html;
+                });
+            }
+
+            renderTable(data);
+        }
+
+        // 渲染表格資料 (支援編輯行切換)
+        function renderTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            const noData = document.getElementById('noDataText');
+            tableBody.innerHTML = '';
+
+            if (data.length === 0) {
+                noData.classList.remove('hidden');
+                return;
+            } else {
+                noData.classList.add('hidden');
+            }
+
+            data.forEach(item => {
+                const timestamp = item["時間戳記"];
+                const name = item["姓名"] || "";
+                const referrer = item["介紹人"] || "";
+                const is18 = item["有選7/18"] === "V";
+                const is19 = item["有選7/19"] === "V";
+                const qty18 = parseInt(item["7/18張數"]) || 0;
+                const qty19 = parseInt(item["7/19張數"]) || 0;
+                const special = item["特殊需求"] || "無";
+
+                // 如果該列處於編輯狀態，則渲染 Input 欄位
+                if (currentlyEditingId === timestamp) {
+                    const selectReferrerOptions = ['蔡孜鵬', '蔡捷葳', '黃玉廷'].map(opt => 
+                        `<option value="${opt}" ${referrer === opt ? 'selected' : ''}>${opt}</option>`
+                    ).join('');
+
+                    tableBody.innerHTML += `
+                        <tr class="bg-blue-50 border-2 border-[#0e5fa3] transition">
+                            <td class="p-4 text-xs text-gray-500 font-mono">${timestamp}</td>
+                            <td class="p-2">
+                                <input type="text" id="edit-name" value="${name}" class="w-full border-2 border-gray-300 rounded px-2 py-1 font-black text-sm text-gray-900 focus:border-[#0e5fa3] focus:outline-none">
+                            </td>
+                            <td class="p-2">
+                                <select id="edit-referrer" class="w-full border-2 border-gray-300 rounded px-2 py-1 text-sm font-bold focus:border-[#0e5fa3] focus:outline-none">
+                                    ${selectReferrerOptions}
+                                </select>
+                            </td>
+                            <td class="p-2 space-y-1 bg-yellow-50 bg-opacity-40">
+                                <label class="flex items-center space-x-1 cursor-pointer">
+                                    <input type="checkbox" id="edit-is18" ${is18 ? 'checked' : ''} onchange="toggleEditQty('18')" class="h-4 w-4 text-[#0e5fa3]">
+                                    <span class="text-xs font-extrabold text-yellow-800">登記 7/18</span>
+                                </label>
+                                <select id="edit-qty18" ${!is18 ? 'disabled' : ''} class="w-full border rounded px-1 py-0.5 text-xs font-bold bg-white disabled:bg-gray-100">
+                                    ${[1,2,3,4,5].map(q => `<option value="${q}" ${qty18 === q ? 'selected' : ''}>${q} 張</option>`).join('')}
+                                </select>
+                            </td>
+                            <td class="p-2 space-y-1 bg-green-50 bg-opacity-40">
+                                <label class="flex items-center space-x-1 cursor-pointer">
+                                    <input type="checkbox" id="edit-is19" ${is19 ? 'checked' : ''} onchange="toggleEditQty('19')" class="h-4 w-4 text-[#00875a]">
+                                    <span class="text-xs font-extrabold text-green-800">登記 7/19</span>
+                                </label>
+                                <select id="edit-qty19" ${!is19 ? 'disabled' : ''} class="w-full border rounded px-1 py-0.5 text-xs font-bold bg-white disabled:bg-gray-100">
+                                    ${[1,2,3,4,5].map(q => `<option value="${q}" ${qty19 === q ? 'selected' : ''}>${q} 張</option>`).join('')}
+                                </select>
+                            </td>
+                            <td class="p-2">
+                                <textarea id="edit-special" class="w-full border-2 border-gray-300 rounded px-2 py-1 text-xs focus:border-[#0e5fa3] focus:outline-none" rows="2">${special === "無" ? "" : special}</textarea>
+                            </td>
+                            <td class="p-4 text-center space-y-1">
+                                <button onclick="saveRow('${timestamp}')" class="w-full bg-[#00875a] hover:bg-[#006844] text-white text-xs font-black py-1 px-2 rounded transition shadow-sm">儲存</button>
+                                <button onclick="cancelEdit()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold py-1 px-2 rounded transition">取消</button>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    // 一般靜態顯示
+                    const cell18 = is18 ? `<span class="bg-yellow-100 text-yellow-800 font-black px-3 py-1 rounded text-xs border border-yellow-200">${qty18} 張</span>` : `<span class="text-gray-300">-</span>`;
+                    const cell19 = is19 ? `<span class="bg-green-100 text-green-800 font-black px-3 py-1 rounded text-xs border border-green-200">${qty19} 張</span>` : `<span class="text-gray-300">-</span>`;
+                    const specialBadge = special !== "無" && special !== "" ? `<span class="text-red-700 bg-red-50 px-2.5 py-1 rounded-lg border border-red-100 font-bold text-xs block max-w-xs truncate" title="${special}">${special}</span>` : `<span class="text-gray-400 text-xs">無</span>`;
+
+                    const row = `
+                        <tr class="hover:bg-[#fefcf0] transition">
+                            <td class="p-4 text-xs text-gray-400 font-mono">${timestamp}</td>
+                            <td class="p-4 font-black text-gray-900">${name}</td>
+                            <td class="p-4 font-bold text-sm text-gray-700">${referrer}</td>
+                            <td class="p-4">${cell18}</td>
+                            <td class="p-4">${cell19}</td>
+                            <td class="p-4">${specialBadge}</td>
+                            <td class="p-4 text-center">
+                                <button onclick="startEdit('${timestamp}')" class="border-2 border-[#0e5fa3] text-[#0e5fa3] hover:bg-[#0e5fa3] hover:text-white font-extrabold text-xs px-3 py-1.5 rounded-lg transition active:scale-95">
+                                    編輯
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                }
+            });
+        }
+
+        // 搜尋篩選
+        function filterData() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (query === '') {
+                renderTable(allResponses);
+                return;
+            }
+
+            const filtered = allResponses.filter(item => {
+                const name = (item["姓名"] || '').toLowerCase();
+                const referrer = (item["介紹人"] || '').toLowerCase();
+                const special = (item["特殊需求"] || '').toLowerCase();
+                
+                return name.includes(query) || referrer.includes(query) || special.includes(query);
+            });
+
+            renderTable(filtered);
+        }
+
+        // 進入編輯狀態
+        function startEdit(timestamp) {
+            currentlyEditingId = timestamp;
+            // 直接重新渲染，保留目前的篩選狀態
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (query !== '') {
+                filterData();
+            } else {
+                renderTable(allResponses);
+            }
+        }
+
+        // 取消編輯
+        function cancelEdit() {
+            currentlyEditingId = null;
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (query !== '') {
+                filterData();
+            } else {
+                renderTable(allResponses);
+            }
+        }
+
+        // 編輯區塊內的 checkbox 連動張數選單啟用狀態
+        function toggleEditQty(dateSuffix) {
+            const isChecked = document.getElementById(`edit-is${dateSuffix}`).checked;
+            const qtySelect = document.getElementById(`edit-qty${dateSuffix}`);
+            qtySelect.disabled = !isChecked;
+        }
+
+        // 將變更儲存並同步至 Google 試算表
+        function saveRow(timestamp) {
+            const editName = document.getElementById('edit-name').value.trim();
+            const editReferrer = document.getElementById('edit-referrer').value;
+            const editIs18 = document.getElementById('edit-is18').checked;
+            const editIs19 = document.getElementById('edit-is19').checked;
+            const editQty18 = editIs18 ? document.getElementById('edit-qty18').value : "0";
+            const editQty19 = editIs19 ? document.getElementById('edit-qty19').value : "0";
+            const editSpecial = document.getElementById('edit-special').value.trim();
+
+            if (!editName) {
+                alert("登記姓名不能留空！");
+                return;
+            }
+
+            if (!editIs18 && !editIs19) {
+                alert("觀賽日期請至少勾選一個天數（7/18 或 7/19）！");
+                return;
+            }
+
+            // 準備傳送至 Google Script 的參數
+            const payload = {
+                action: "update",
+                timestamp: timestamp,
+                name: editName,
+                referrer: editReferrer,
+                date18: editIs18 ? "V" : "",
+                qty18: editQty18,
+                date19: editIs19 ? "V" : "",
+                qty19: editQty19,
+                specialReq: editSpecial !== "" ? editSpecial : "無"
+            };
+
+            // 開啟載入狀態
+            const loading = document.getElementById('loadingStatus');
+            const loadingText = document.getElementById('loadingText');
+            const content = document.getElementById('dashboardContent');
+            
+            loadingText.innerText = "正在即時更新數據並同步至雲端試算表...";
+            loading.classList.remove('hidden');
+            content.classList.add('opacity-40');
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === "success") {
+                    currentlyEditingId = null;
+                    // 在前端直接更新本地數據，加速反應時間（不需等整個 fetchData 的 fetch）
+                    const targetIndex = allResponses.findIndex(item => item["時間戳記"] === timestamp);
+                    if (targetIndex !== -1) {
+                        allResponses[targetIndex]["姓名"] = editName;
+                        allResponses[targetIndex]["介紹人"] = editReferrer;
+                        allResponses[targetIndex]["有選7/18"] = editIs18 ? "V" : "";
+                        allResponses[targetIndex]["7/18張數"] = editQty18;
+                        allResponses[targetIndex]["有選7/19"] = editIs19 ? "V" : "";
+                        allResponses[targetIndex]["7/19張數"] = editQty19;
+                        allResponses[targetIndex]["特殊需求"] = editSpecial !== "" ? editSpecial : "無";
+                    }
+                    // 重新渲染統計卡片與表格
+                    renderDashboard(allResponses);
+                } else {
+                    alert("同步更新失敗：" + (result.message || "未知錯誤"));
+                }
+            })
+            .catch(err => {
+                console.error("更新失敗：", err);
+                alert("連線更新失敗，請檢查網路連線。");
+            })
+            .finally(() => {
+                loading.classList.add('hidden');
+                content.classList.remove('opacity-40');
+            });
+        }
+    </script>
+</body>
+</html>```
+
+```
