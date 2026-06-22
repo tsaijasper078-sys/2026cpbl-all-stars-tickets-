@@ -114,7 +114,7 @@
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
                     </div>
                     <div>
-                        <p class="text-xs text-yellow-100 font-black uppercase tracking-wider">7/18(六) 票券總數 </p>
+                        <p class="text-xs text-yellow-100 font-black uppercase tracking-wider">7/18(六) 票券總數</p>
                         <h3 id="statTotal18" class="text-3xl font-black mt-1">0 張</h3>
                     </div>
                 </div>
@@ -196,7 +196,7 @@
 
                 <!-- 表格本體 -->
                 <div class="overflow-x-auto w-full">
-                    <table class="w-full text-left border-collapse min-w-[900px]">
+                    <table class="w-full text-left border-collapse min-w-[950px]">
                         <thead>
                             <tr class="bg-gray-50 text-gray-500 text-sm font-bold border-b">
                                 <th class="p-4 w-40">登記時間</th>
@@ -205,7 +205,7 @@
                                 <th class="p-4 w-40">7/18 (六)</th>
                                 <th class="p-4 w-40">7/19 (日)</th>
                                 <th class="p-4">特殊需求</th>
-                                <th class="p-4 w-28 text-center">操作</th>
+                                <th class="p-4 w-44 text-center">操作</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-gray-100 text-gray-700">
@@ -215,6 +215,38 @@
                 </div>
                 <div id="noDataText" class="p-10 text-center text-gray-400 font-bold hidden">沒有找到任何登記資料</div>
             </div>
+        </div>
+    </div>
+
+    <!-- 自訂刪除確認彈跳視窗 (代替 browser confirm 視窗) -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 p-4 animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border-4 border-red-600">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-600">
+                <span class="text-2xl font-black">🗑️</span>
+            </div>
+            <h3 class="text-2xl font-black text-gray-900 mb-2">確定要刪除嗎？</h3>
+            <p class="text-gray-500 text-sm mb-6 leading-relaxed">此動作將同步從雲端 Google 試算表中<strong class="text-red-600">永久移除此列數據</strong>，且無法復原！</p>
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="w-1/2 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-black rounded-xl transition active:scale-95">
+                    取消
+                </button>
+                <button id="confirmDeleteBtn" class="w-1/2 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl transition shadow-md active:scale-95">
+                    確定刪除
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自訂錯誤/提示彈跳視窗 (代替 browser alert 視窗) -->
+    <div id="customAlertModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-[100] p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-[#0e5fa3]">
+            <div class="w-12 h-12 bg-blue-100 text-[#0e5fa3] rounded-full flex items-center justify-center mx-auto mb-3">
+                <span class="text-xl font-black">📢</span>
+            </div>
+            <p id="customAlertMessage" class="text-gray-800 font-black mb-5 text-base leading-relaxed"></p>
+            <button onclick="closeCustomAlert()" class="w-full py-3 bg-[#0e5fa3] hover:bg-[#0a497e] text-white font-black rounded-xl transition active:scale-95">
+                我知道了
+            </button>
         </div>
     </div>
 
@@ -232,6 +264,7 @@
         
         let allResponses = [];
         let currentlyEditingId = null; // 儲存目前正在編輯的列（以時間戳記為識別符）
+        let deleteTargetTimestamp = null; // 儲存預備刪除的時間戳記
 
         window.onload = function() {
             const loggedInUser = localStorage.getItem('adminLoggedInUser');
@@ -241,6 +274,16 @@
                 document.getElementById('welcomeUserText').innerText = `歡迎回來，${loggedInUser} ⚾`;
                 fetchData();
             }
+        }
+
+        // 自訂 Alert 控制
+        function showCustomAlert(msg) {
+            document.getElementById('customAlertMessage').innerText = msg;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
         }
 
         function checkPassword() {
@@ -294,7 +337,7 @@
                 })
                 .catch(err => {
                     console.error("讀取失敗：", err);
-                    alert("連線失敗，請檢查網路連線。");
+                    showCustomAlert("連線失敗，請檢查網路連線。");
                 })
                 .finally(() => {
                     loading.classList.add('hidden');
@@ -412,7 +455,7 @@
             renderTable(data);
         }
 
-        // 渲染表格資料 (支援編輯行切換)
+        // 渲染表格資料 (支援編輯行切換、並增設刪除功能)
         function renderTable(data) {
             const tableBody = document.getElementById('tableBody');
             const noData = document.getElementById('noDataText');
@@ -458,7 +501,6 @@
                                     <span class="text-xs font-extrabold text-yellow-800">登記 7/18</span>
                                 </label>
                                 <select id="edit-qty18" ${!is18 ? 'disabled' : ''} class="w-full border rounded px-1 py-0.5 text-xs font-bold bg-white disabled:bg-gray-100">
-                                    <!-- 已擴充為 1-10 張選單 -->
                                     ${[1,2,3,4,5,6,7,8,9,10].map(q => `<option value="${q}" ${qty18 === q ? 'selected' : ''}>${q} 張</option>`).join('')}
                                 </select>
                             </td>
@@ -468,7 +510,6 @@
                                     <span class="text-xs font-extrabold text-green-800">登記 7/19</span>
                                 </label>
                                 <select id="edit-qty19" ${!is19 ? 'disabled' : ''} class="w-full border rounded px-1 py-0.5 text-xs font-bold bg-white disabled:bg-gray-100">
-                                    <!-- 已擴充為 1-10 張選單 -->
                                     ${[1,2,3,4,5,6,7,8,9,10].map(q => `<option value="${q}" ${qty19 === q ? 'selected' : ''}>${q} 張</option>`).join('')}
                                 </select>
                             </td>
@@ -488,7 +529,7 @@
                     const specialBadge = special !== "無" && special !== "" ? `<span class="text-red-700 bg-red-50 px-2.5 py-1 rounded-lg border border-red-100 font-bold text-xs block max-w-xs truncate" title="${special}">${special}</span>` : `<span class="text-gray-400 text-xs">無</span>`;
 
                     const row = `
-                        <tr class="hover:bg-[#fefcf0] transition">
+                        <tr class="hover:bg-[#fefcf0] transition border-b border-gray-100">
                             <td class="p-4 text-xs text-gray-400 font-mono">${timestamp}</td>
                             <td class="p-4 font-black text-gray-900">${name}</td>
                             <td class="p-4 font-bold text-sm text-gray-700">${referrer}</td>
@@ -496,9 +537,14 @@
                             <td class="p-4">${cell19}</td>
                             <td class="p-4">${specialBadge}</td>
                             <td class="p-4 text-center">
-                                <button onclick="startEdit('${timestamp}')" class="border-2 border-[#0e5fa3] text-[#0e5fa3] hover:bg-[#0e5fa3] hover:text-white font-extrabold text-xs px-3 py-1.5 rounded-lg transition active:scale-95">
-                                    編輯
-                                </button>
+                                <div class="flex items-center justify-center space-x-2 whitespace-nowrap">
+                                    <button onclick="startEdit('${timestamp}')" class="border-2 border-[#0e5fa3] text-[#0e5fa3] hover:bg-[#0e5fa3] hover:text-white font-extrabold text-xs px-2.5 py-1.5 rounded-lg transition active:scale-95">
+                                        編輯
+                                    </button>
+                                    <button onclick="confirmDelete('${timestamp}')" class="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-extrabold text-xs px-2.5 py-1.5 rounded-lg transition active:scale-95">
+                                        刪除
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -555,6 +601,65 @@
             qtySelect.disabled = !isChecked;
         }
 
+        // 觸發自訂刪除彈跳視窗
+        function confirmDelete(timestamp) {
+            deleteTargetTimestamp = timestamp;
+            document.getElementById('deleteConfirmModal').classList.remove('hidden');
+        }
+
+        // 關閉刪除確認視窗
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmModal').classList.add('hidden');
+            deleteTargetTimestamp = null;
+        }
+
+        // 執行刪除作業 (同步至試算表)
+        function executeDelete() {
+            if (!deleteTargetTimestamp) return;
+            const timestamp = deleteTargetTimestamp;
+            closeDeleteModal();
+
+            const payload = {
+                action: "delete",
+                timestamp: timestamp
+            };
+
+            const loading = document.getElementById('loadingStatus');
+            const loadingText = document.getElementById('loadingText');
+            const content = document.getElementById('dashboardContent');
+            
+            loadingText.innerText = "正在即時刪除數據並同步至雲端試算表...";
+            loading.classList.remove('hidden');
+            content.classList.add('opacity-40');
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.status === "success") {
+                    // 自前端本地移除
+                    allResponses = allResponses.filter(item => item["時間戳記"] !== timestamp);
+                    renderDashboard(allResponses);
+                } else {
+                    showCustomAlert("同步刪除失敗：" + (result.message || "未知錯誤"));
+                }
+            })
+            .catch(err => {
+                console.error("刪除失敗：", err);
+                showCustomAlert("連線刪除失敗，請檢查網路連線。");
+            })
+            .finally(() => {
+                loading.classList.add('hidden');
+                content.classList.remove('opacity-40');
+            });
+        }
+
+        // 將刪除綁定至確定按鈕
+        document.getElementById('confirmDeleteBtn').onclick = executeDelete;
+
         // 將變更儲存並同步至 Google 試算表
         function saveRow(timestamp) {
             const editName = document.getElementById('edit-name').value.trim();
@@ -566,12 +671,12 @@
             const editSpecial = document.getElementById('edit-special').value.trim();
 
             if (!editName) {
-                alert("登記姓名不能留空！");
+                showCustomAlert("登記姓名不能留空！");
                 return;
             }
 
             if (!editIs18 && !editIs19) {
-                alert("觀賽日期請至少勾選一個天數（7/18 或 7/19）！");
+                showCustomAlert("觀賽日期請至少勾選一個天數（7/18 或 7/19）！");
                 return;
             }
 
@@ -618,12 +723,12 @@
                     }
                     renderDashboard(allResponses);
                 } else {
-                    alert("同步更新失敗：" + (result.message || "未知錯誤"));
+                    showCustomAlert("同步更新失敗：" + (result.message || "未知錯誤"));
                 }
             })
             .catch(err => {
                 console.error("更新失敗：", err);
-                alert("連線更新失敗，請檢查網路連線。");
+                showCustomAlert("連線更新失敗，請檢查網路連線。");
             })
             .finally(() => {
                 loading.classList.add('hidden');
